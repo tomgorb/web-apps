@@ -1,0 +1,16 @@
+psycopg2_binary
+XlsxWriter
+xlrd
+pymongo
+pandas
+mysql-connector-python
+numpy
+pandas-gbq
+protobuf
+tqdm
+flask
+pyarrow
+plotly
+isoweek
+gradio
+streamlit

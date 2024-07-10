@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>RESULTS</title>
+  </head>
+  <link rel="stylesheet" type="text/css" href="static/style.css" />
+  <body>
+    <form method="post" action="/result" enctype="multipart/form-data">
+      <h3>RESULTS</h3>
+      {% for table in tables %} {{ table|safe }} {% endfor %}
+      <br />
+      <br />
+      <input type="hidden" name="output_file" value="{{ filename }}" />
+      <input type="submit" value="DOWNLOAD" />
+    </form>
+  </body>
+</html>

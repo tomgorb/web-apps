@@ -1,0 +1,20 @@
+.mystyle {
+  font-size: 11pt;
+  font-family: Calibri;
+  border-collapse: collapse;
+  border: 1px solid silver;
+}
+
+.mystyle td,
+th {
+  padding: 5px;
+}
+
+.mystyle tr:nth-child(even) {
+  background: #e0e0e0;
+}
+
+.mystyle tr:hover {
+  background: silver;
+  cursor: pointer;
+}

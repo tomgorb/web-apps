@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Data & Statistics</title>
+    <link rel="icon" type="image/png" href="static/favicon.png" />
+  </head>
+
+  <body>
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      onsubmit="return validateName()"
+    >
+      <p>
+        <input
+          type="reset"
+          id="start"
+          name="start"
+          onclick="show();"
+          value="START!"
+        />
+      </p>
+
+      <div id="data_import" style="display: none">
+        <h2>DATA</h2>
+        <fieldset>
+          <legend>IMPORT CSV FILE</legend>
+          <input type="file" id="data" name="data" accept=".csv" />
+        </fieldset>
+      </div>
+
+      <div id="period_form" style="display: none">
+        <h2>TIME PERIODS</h2>
+        <div id="placeholder">
+          <div id="template_1">
+            <fieldset>
+              <legend id="period_1">TIME PERIOD</legend>
+              <label>NAME</label>
+              <input
+                type="text"
+                id="period_name_1"
+                name="period_name_1"
+                onkeyup="validateName();"
+              />
+              <span id="error_name_1"></span><br />
+              <br />
+              <label>START</label>
+              <input
+                type="date"
+                id="period_start_1"
+                name="period_start_1"
+                required
+              />
+              <label>END</label>
+              <input
+                type="date"
+                id="period_end_1"
+                name="period_end_1"
+                required
+              /><br />
+              <br />
+              <button type="button" id="remove_1" onclick="remove(this.id);">
+                DELETE
+              </button>
+            </fieldset>
+          </div>
+        </div>
+        <p>
+          <button type="button" name="add_period" onclick="add();">
+            ADD A TIME PERIOD
+          </button>
+        </p>
+      </div>
+
+      <div id="stats_selection" style="display: none">
+        <h2>STATS</h2>
+        <fieldset>
+          <legend>AVAILABLE STATS</legend>
+
+          <div>
+            <input type="checkbox" name="stats" id="min" value="{{ min }}" />
+            <label for="min">Min</label>
+          </div>
+
+          <div>
+            <input type="checkbox" name="stats" id="max" value="{{ max }}" />
+            <label for="max">Max</label>
+          </div>
+
+          <div>
+            <input type="checkbox" name="stats" id="sum" value="{{ sum }}" />
+            <label for="sum">Sum</label>
+          </div>
+
+          <div>
+            <input type="checkbox" name="stats" id="mean" value="{{ mean }}" />
+            <label for="mean">Mean</label>
+          </div>
+
+          <div>
+            <input type="checkbox" name="stats" id="std" value="{{ std }}" />
+            <label for="std">StdDev</label>
+          </div>
+
+          <div>
+            <input
+              type="checkbox"
+              name="stats"
+              id="median"
+              value="{{ median }}"
+            />
+            <label for="median">Median</label>
+          </div>
+
+          <div>
+            <input
+              type="checkbox"
+              id="quantile"
+              name="quantile"
+              onchange="showQuantiles(this)"
+            />
+            <label for="quantile">Quantile</label>
+          </div>
+
+          <div id="quantiles" style="display: none">
+            <fieldset>
+              <legend>CHOOSE YOUR QUANTILE:</legend>
+              <div>
+                <input
+                  type="radio"
+                  id="25%"
+                  name="stats"
+                  value="{{ quantile }},25"
+                />
+                <label for="quantile25">25%</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="75%"
+                  name="stats"
+                  value="{{ quantile }},75"
+                />
+                <label for="quantile75">75%</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="90%"
+                  name="stats"
+                  value="{{ quantile }},90"
+                />
+                <label for="quantile90">90%</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="95%"
+                  name="stats"
+                  value="{{ quantile }},95"
+                />
+                <label for="quantile95">95%</label>
+              </div>
+            </fieldset>
+          </div>
+        </fieldset>
+      </div>
+      <div id="validate" style="display: none">
+        <p>
+          <input type="submit" onclick="checkform();" value="GO!" />
+        </p>
+      </div>
+    </form>
+  </body>
+
+  <script type="text/javascript">
+    function show() {
+      document.getElementById("data_import").style.display = "block";
+      document.getElementById("period_form").style.display = "block";
+      document.getElementById("stats_selection").style.display = "block";
+      document.getElementById("validate").style.display = "block";
+    }
+
+    function showQuantiles(x) {
+      if (x.checked) {
+        document.getElementById("quantiles").style.display = "block";
+      } else {
+        document.getElementById("quantiles").style.display = "none";
+      }
+    }
+
+    function validateName() {
+      for (var i = 1; i <= _counter; i++) {
+        var textInput = document.getElementById(
+          "period_name_" + _counter
+        ).value;
+        var replacedInput = textInput.replace(/[\[\]\:\*\?\/\\]/g, "");
+        if (textInput != replacedInput) {
+          errorMessage = "PROHIBITED CHARACTERS: [ ] : * ? / \\";
+          document.getElementById("error_name_" + _counter).innerHTML =
+            errorMessage;
+          return false;
+        } else if (textInput.length < 1) {
+          errorMessage = "NAME IS EMPTY!";
+          document.getElementById("error_name_" + _counter).innerHTML =
+            errorMessage;
+          return false;
+        } else {
+          document.getElementById("error_name_" + _counter).innerHTML = "";
+          return true;
+        }
+      }
+    }
+
+    var _counter = 1;
+    var max_periods = 3;
+
+    function add() {
+      if (_counter < max_periods) {
+        var original = document.getElementById("template_" + _counter);
+        var clone = original.cloneNode(true);
+        _counter++;
+        clone.id = "template_" + _counter;
+        clone.getElementsByTagName("input")[0].id = "period_name_" + _counter;
+        clone.getElementsByTagName("input")[1].id = "period_start_" + _counter;
+        clone.getElementsByTagName("input")[2].id = "period_end_" + _counter;
+        clone.getElementsByTagName("input")[0].name = "period_name_" + _counter;
+        clone.getElementsByTagName("input")[1].name =
+          "period_start_" + _counter;
+        clone.getElementsByTagName("input")[2].name = "period_end_" + _counter;
+        clone.getElementsByTagName("input")[0].value = "";
+        clone.getElementsByTagName("input")[1].value = "";
+        clone.getElementsByTagName("input")[2].value = "";
+        clone.getElementsByTagName("span")[0].id = "error_name_" + _counter;
+        clone.getElementsByTagName("span")[0].innerHTML = "";
+        clone.getElementsByTagName("button")[0].id = "remove_" + _counter;
+        original.parentNode.appendChild(clone);
+      }
+    }
+
+    function remove(clicked_id) {
+      if (clicked_id[clicked_id.length - 1] == 1) {
+        return false;
+      }
+      var node = document.getElementById(
+        "template_" + clicked_id[clicked_id.length - 1]
+      );
+      if (node.parentNode) {
+        node.parentNode.removeChild(node);
+      }
+      for (var i = clicked_id; i <= _counter; i++) {
+        var doc = document.getElementById("template_" + i);
+        if (doc) {
+          doc.id = "template_" + (i - 1);
+          doc.getElementsByTagName("input")[0].id = "period_name_" + (i - 1);
+          doc.getElementsByTagName("input")[1].id = "period_start_" + (i - 1);
+          doc.getElementsByTagName("input")[2].id = "period_end_" + (i - 1);
+          doc.getElementsByTagName("input")[0].name = "period_name_" + (i - 1);
+          doc.getElementsByTagName("input")[1].name = "period_start_" + (i - 1);
+          doc.getElementsByTagName("input")[2].name = "period_end_" + (i - 1);
+          doc.getElementsByTagName("button")[0].id = (i - 1).toString();
+        }
+      }
+      _counter--;
+    }
+
+    function checkform() {
+      const checkboxes = document.getElementsByName("stats");
+
+      setValidity();
+
+      checkboxes.forEach((checkbox) =>
+        checkbox.addEventListener("input", (e) => {
+          [...checkboxes].some((checkbox) => checkbox.checked) ||
+            (e.target.checked = true);
+          setValidity();
+        })
+      );
+
+      function setValidity() {
+        const validity = [...checkboxes].some((checkbox) => checkbox.checked)
+          ? ""
+          : "PLEASE SELECT AT LEAST ONE STAT";
+        [...checkboxes].at(-1).setCustomValidity(validity);
+      }
+    }
+  </script>
+</html>
