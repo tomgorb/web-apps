@@ -38,3 +38,8 @@ streamlit run app.py
 >>> streamlit.__version__
 '1.35.0'
 ```
+
+### data
+
+- *geo.csv*: mock data from [Mockaroo](https://www.mockaroo.com/)
+- *web.csv*: some user generated data *Google Analytics* style
