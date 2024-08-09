@@ -1,4 +1,4 @@
-# web-based apps
+# web apps
 
 ## flask
 
