@@ -39,6 +39,33 @@ streamlit run app.py
 '1.35.0'
 ```
 
+
+## mesop
+
+```bash
+mesop app.py
+```
+
+```python
+>>> import mesop
+>>> mesop.__version__
+'0.11.1'
+```
+
+
+## fasthtml
+
+```bash
+python app.py
+```
+
+```python
+>>> import fasthtml
+>>> fasthtml.__version__
+'0.2.1'
+```
+
+
 ### data
 
 - *geo.csv*: mock data from [Mockaroo](https://www.mockaroo.com/)

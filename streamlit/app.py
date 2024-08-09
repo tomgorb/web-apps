@@ -3,6 +3,7 @@
 
 import re
 import time
+import requests
 import pandas as pd
 import streamlit as st
 from openai import OpenAI
@@ -179,11 +180,24 @@ if t == "Open AI":
     api_key = st.text_input("API key")
     client = OpenAI(api_key=api_key)
 
-    def answer(messages):
+    if api_key:
+        response = requests.request(
+            method="GET",
+            url="https://api.openai.com/v1/models",
+            headers={
+                'accept': "application/json",
+                'Authorization': f"Bearer {api_key}"
+            }
+        ).json()
+        models = [model['id'] for model in response['data']]
+        model = st.selectbox("Select model", models)
+
+    def answer(model, messages):
 
         response = client.chat.completions.create(
            # model="gpt-3.5-turbo",
-           model="gpt-4",
+           # model="gpt-4",
+           model=model,
            messages=messages,
            temperature=0.2,
            max_tokens=256,
@@ -195,7 +209,7 @@ if t == "Open AI":
     assistant_prompt = st.text_area("content 👇 (role: assistant )")
     user_prompt = st.text_area("content 👇 (role: user)")
 
-    if api_key and (assistant_prompt and user_prompt):
+    if api_key and model and (assistant_prompt and user_prompt):
 
         go = st.button("🟢")
 
@@ -205,8 +219,8 @@ if t == "Open AI":
                 {"role": "assistant", "content": assistant_prompt},
                 {"role": "user", "content": user_prompt}
                 ]
-            response = answer(messages)
-            
+            response = answer(model, messages)
+
             tokens_used = response.usage.total_tokens
             st.write("%d tokens used."%tokens_used)
 
