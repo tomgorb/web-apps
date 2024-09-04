@@ -43,7 +43,7 @@ streamlit run app.py
 ## mesop
 
 ```bash
-mesop app.py
+MESOP_STATE_SESSION_BACKEND=memory mesop app.py
 ```
 
 ```python
